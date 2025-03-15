@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Game } from '@/lib/games';
 import { cn } from '@/lib/utils';
@@ -12,18 +12,10 @@ interface GameCardProps {
 const GameCard: React.FC<GameCardProps> = ({ game, delay }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
-  const linkRef = useRef<HTMLAnchorElement>(null);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     window.open(game.url, '_blank', 'noopener,noreferrer');
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      linkRef.current?.click();
-    }
   };
 
   return (
@@ -38,10 +30,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, delay }) => {
       }}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
       role="button"
       aria-label={`Play ${game.title}`}
+      tabIndex={0}
     >
       <div className="relative overflow-hidden">
         {!imageLoaded && (
@@ -52,8 +43,8 @@ const GameCard: React.FC<GameCardProps> = ({ game, delay }) => {
           alt={`${game.title} thumbnail`}
           className={cn(
             "game-card-thumbnail group-hover:scale-[1.03]",
-            !imageLoaded && "opacity-0",
-            imageLoaded && "opacity-100 transition-opacity duration-500"
+            !imageLoaded && "hidden",
+            imageLoaded && "block transition-opacity duration-500"
           )}
           onLoad={() => setImageLoaded(true)}
           loading="lazy"
@@ -61,17 +52,14 @@ const GameCard: React.FC<GameCardProps> = ({ game, delay }) => {
         <div 
           className={cn(
             "absolute inset-0 bg-primary/0 flex items-center justify-center transition-all duration-300",
-            isHovering && "bg-primary/10"
+            isHovering && "bg-primary/20"
           )}
         >
-          <div 
-            className={cn(
-              "transform scale-0 opacity-0 bg-white rounded-full p-2 shadow-lg transition-all duration-300",
-              isHovering && "scale-100 opacity-100"
-            )}
-          >
-            <ExternalLink className="w-6 h-6 text-primary" />
-          </div>
+          {isHovering && (
+            <div className="bg-card rounded-full p-2 shadow-lg">
+              <ExternalLink className="w-6 h-6 text-primary" />
+            </div>
+          )}
         </div>
       </div>
       <div className="game-card-content">
@@ -81,7 +69,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, delay }) => {
         </div>
         <p className="text-sm text-muted-foreground">{game.description}</p>
         <a 
-          ref={linkRef}
           href={game.url} 
           target="_blank" 
           rel="noopener noreferrer"
