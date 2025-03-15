@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, X, Timer, Trophy, Copy, X as CloseIcon, Share2, Calendar } from 'lucide-react';
+import { Check, X, Timer, Trophy, Copy, X as CloseIcon, Calendar } from 'lucide-react';
 import { GameType } from '@/lib/games';
 import { GameResults } from './CircuitResults';
 import { 
@@ -12,7 +12,6 @@ import {
   DialogClose
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 
@@ -116,35 +115,11 @@ const CircuitSummary: React.FC<CircuitSummaryProps> = ({
             </div>
           </div>
           
-          <div className="flex justify-center mt-6 gap-3">
+          <div className="flex justify-center mt-6">
             <Button onClick={copyToClipboard} variant="outline" className="gap-2">
               <Copy className="w-4 h-4" />
               Copy Result
             </Button>
-            
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <Share2 className="w-4 h-4" />
-                  Share
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="p-4 w-72">
-                <div className="space-y-2">
-                  <h4 className="font-medium">Share your results</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Copy this text to share your Daily Circuit results with friends.
-                  </p>
-                  <div className="bg-muted p-2 rounded-md text-xs">
-                    {generateShareableText()}
-                  </div>
-                  <Button size="sm" onClick={copyToClipboard} className="w-full gap-2 mt-2">
-                    <Copy className="w-3 h-3" />
-                    Copy to clipboard
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
           </div>
         </div>
       </DialogContent>
