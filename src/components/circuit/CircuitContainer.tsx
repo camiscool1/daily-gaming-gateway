@@ -139,7 +139,20 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
   };
 
   const handleSubmitResults = () => {
-    setSummaryOpen(true);
+    // Double check that all results are selected before opening summary
+    const allResultsCompleted = games.every(game => 
+      gameResults[game.id] === 'completed' || gameResults[game.id] === 'failed'
+    );
+    
+    if (allResultsCompleted) {
+      setSummaryOpen(true);
+    } else {
+      toast({
+        title: "Please complete all results",
+        description: "Please select a result for each game before submitting.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
