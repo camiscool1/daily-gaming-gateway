@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { games } from '@/lib/games';
-import { toast } from 'sonner';
 
 const DailyCircuit = () => {
   const [dailyGames, setDailyGames] = useState<typeof games>([]);
@@ -43,27 +42,9 @@ const DailyCircuit = () => {
   }, []);
   
   const openAllGamesInTabs = () => {
-    // Open all daily games in separate tabs with a slight delay to avoid popup blockers
-    let openedCount = 0;
-    
-    dailyGames.forEach((game, index) => {
-      // Use setTimeout to stagger the opening of tabs
-      setTimeout(() => {
-        const newWindow = window.open(game.url, '_blank');
-        
-        if (newWindow) {
-          openedCount++;
-          console.log(`Opened game: ${game.title}`);
-        } else {
-          console.log(`Failed to open: ${game.title}`);
-          toast.error("Popup blocker may be preventing games from opening. Please allow popups for this site.");
-        }
-        
-        // If this is the last game, check if all opened successfully
-        if (index === dailyGames.length - 1 && openedCount === dailyGames.length) {
-          toast.success(`All ${dailyGames.length} games opened successfully!`);
-        }
-      }, index * 300); // 300ms delay between each window.open call
+    // Open all daily games in separate tabs
+    dailyGames.forEach(game => {
+      window.open(game.url, '_blank', 'noopener,noreferrer');
     });
   };
 
