@@ -3,12 +3,27 @@ import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ExternalLink, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { games } from '@/lib/games';
+import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@/components/ui/alert';
 
 const DailyCircuit = () => {
   const [dailyGames, setDailyGames] = useState<typeof games>([]);
+  const [popupDialogOpen, setPopupDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Function to get a deterministic random set of games based on the current date
@@ -42,9 +57,42 @@ const DailyCircuit = () => {
   }, []);
   
   const openAllGamesInTabs = () => {
+    // First, try to open a test popup to check if popups are allowed
+    const testPopup = window.open('about:blank', '_blank');
+    
+    if (!testPopup || testPopup.closed || typeof testPopup.closed === 'undefined') {
+      // Popup was blocked
+      toast({
+        title: "Popup Blocker Detected",
+        description: "We couldn't open all games because popups are blocked. Please allow popups for this site.",
+        variant: "destructive",
+      });
+      
+      // Show the popup help dialog
+      setPopupDialogOpen(true);
+      return;
+    }
+    
+    // Close the test popup if it was successfully opened
+    testPopup.close();
+    
     // Open all daily games in separate tabs
-    dailyGames.forEach(game => {
-      window.open(game.url, '_blank', 'noopener,noreferrer');
+    let allOpened = true;
+    
+    dailyGames.forEach((game, index) => {
+      // Add a small delay between each window.open to avoid triggering popup blockers
+      setTimeout(() => {
+        const gameWindow = window.open(game.url, '_blank', 'noopener,noreferrer');
+        if (!gameWindow) {
+          allOpened = false;
+        }
+      }, index * 300);
+    });
+    
+    // Show success message
+    toast({
+      title: "Games Opened",
+      description: "All games should now be opening in new tabs.",
     });
   };
 
@@ -79,6 +127,15 @@ const DailyCircuit = () => {
                   These games were randomly selected for today. A new set will be available tomorrow!
                 </p>
                 
+                <Alert className="mb-6">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Important Note</AlertTitle>
+                  <AlertDescription>
+                    This feature requires popup windows to be enabled in your browser.
+                    If games don't open, please allow popups for this site.
+                  </AlertDescription>
+                </Alert>
+                
                 <div className="space-y-6">
                   <ul className="space-y-4 text-left">
                     {dailyGames.map((game) => (
@@ -107,6 +164,62 @@ const DailyCircuit = () => {
           </section>
         </div>
       </main>
+      
+      {/* Popup Help Dialog */}
+      <Dialog open={popupDialogOpen} onOpenChange={setPopupDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enable Popups to Use the Circuit</DialogTitle>
+            <DialogDescription>
+              To open all games in the circuit, you need to allow popups for this site. Follow these instructions for your browser:
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 text-sm">
+            <div>
+              <h3 className="font-medium mb-1">Google Chrome</h3>
+              <ol className="list-decimal pl-5 space-y-1">
+                <li>Look for the popup blocked icon <span className="px-1 py-0.5 bg-gray-100 rounded">🚫</span> in the address bar</li>
+                <li>Click on it and select "Always allow popups from this site"</li>
+                <li>Click "Done" and try again</li>
+              </ol>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-1">Firefox</h3>
+              <ol className="list-decimal pl-5 space-y-1">
+                <li>Click on the popup notification at the top of the page</li>
+                <li>Select "Preferences" and choose "Allow popups for this site"</li>
+                <li>Try again</li>
+              </ol>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-1">Safari</h3>
+              <ol className="list-decimal pl-5 space-y-1">
+                <li>Go to Safari &gt; Preferences &gt; Websites &gt; Pop-up Windows</li>
+                <li>Find this website and set it to "Allow"</li>
+                <li>Reload the page and try again</li>
+              </ol>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-1">Edge</h3>
+              <ol className="list-decimal pl-5 space-y-1">
+                <li>Click on the popup notification in the address bar</li>
+                <li>Select "Always allow popups from this site"</li>
+                <li>Try again</li>
+              </ol>
+            </div>
+          </div>
+          
+          <div className="flex justify-center mt-2">
+            <Button onClick={() => setPopupDialogOpen(false)}>
+              I'll Enable Popups
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       
       <Footer />
     </div>
