@@ -29,7 +29,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, delay }) => {
   return (
     <div 
       className={cn(
-        "game-card",
+        "game-card group",
         "opacity-0",
       )}
       style={{ 
@@ -51,7 +51,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, delay }) => {
           src={game.thumbnailUrl}
           alt={`${game.title} thumbnail`}
           className={cn(
-            "game-card-thumbnail",
+            "game-card-thumbnail group-hover:scale-[1.03]",
             !imageLoaded && "opacity-0",
             imageLoaded && "opacity-100 transition-opacity duration-500"
           )}
