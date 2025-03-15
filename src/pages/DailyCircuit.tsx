@@ -44,7 +44,7 @@ const DailyCircuit = () => {
   const openAllGamesInTabs = () => {
     // Open all daily games in separate tabs
     dailyGames.forEach(game => {
-      window.open(game.url, '_blank');
+      window.open(game.url, '_blank', 'noopener,noreferrer');
     });
   };
 
