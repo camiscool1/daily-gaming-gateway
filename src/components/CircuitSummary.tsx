@@ -39,7 +39,7 @@ const CircuitSummary: React.FC<CircuitSummaryProps> = ({
   const completionRate = (completedCount / games.length) * 100;
   
   const generateShareableText = () => {
-    return `Daily Circuit (${formattedDate}): ${completedCount}/${games.length} games completed in ${formattedTime}! Check out my results at: ${window.location.href}`;
+    return `Daily Circuit (${formattedDate}): ${completedCount}/${games.length} games completed in ${formattedTime}! See if you can beat my time, play at: ${window.location.origin}/daily-circuit`;
   };
   
   const copyToClipboard = () => {
