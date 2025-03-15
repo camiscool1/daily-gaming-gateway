@@ -1,15 +1,18 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { GameType } from '@/lib/games';
-import { GameResults } from '@/components/CircuitResults';
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from '@/components/ui/alert';
 import { useCircuitTimer } from '@/hooks/useCircuitTimer';
+import { usePopupBlocker } from '@/hooks/usePopupBlocker';
+import { useGameResults } from '@/hooks/useGameResults';
+import { useGameWindows } from '@/hooks/useGameWindows';
+
 import PopupBlockerDialog from '@/components/PopupBlockerDialog';
 import CircuitGamesList from '@/components/CircuitGamesList';
 import CircuitControls from '@/components/CircuitControls';
@@ -21,12 +24,13 @@ interface CircuitContainerProps {
 }
 
 const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
-  const [popupDialogOpen, setPopupDialogOpen] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
-  const [gameResults, setGameResults] = useState<GameResults>({});
-  const [allResultsSelected, setAllResultsSelected] = useState(false);
   const { toast } = useToast();
+  
+  const { popupDialogOpen, setPopupDialogOpen, checkPopupBlocker } = usePopupBlocker();
+  const { gameResults, allResultsSelected, handleResultChange } = useGameResults(games);
+  const { openAllGamesInTabs } = useGameWindows();
   
   const { 
     timerRunning, 
@@ -41,101 +45,25 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
         description: `Your time: ${formatTime(elapsed)}`,
       });
       
-      // Initialize results when timer stops
-      const initialResults: GameResults = {};
-      games.forEach(game => {
-        initialResults[game.id] = undefined;
-      });
-      setGameResults(initialResults);
-      
       // Show results section
       setShowResults(true);
     }
   });
   
-  // Check if all results are selected whenever gameResults changes
-  useEffect(() => {
-    if (Object.keys(gameResults).length === 0) {
-      setAllResultsSelected(false);
-      return;
-    }
-    
-    const allSelected = games.every(game => 
-      gameResults[game.id] === 'completed' || gameResults[game.id] === 'failed'
-    );
-    
-    console.log("Checking results for all games:", games.map(game => game.id));
-    console.log("Current results:", gameResults);
-    console.log("All selected:", allSelected);
-    
-    setAllResultsSelected(allSelected);
-  }, [gameResults, games]);
-  
   const toggleTimer = () => {
     if (!timerRunning) {
+      // Check if popups are allowed
+      if (!checkPopupBlocker()) {
+        return;
+      }
+      
       // Start the timer
       startTimer();
-      openAllGamesInTabs();
+      openAllGamesInTabs(games);
     } else {
       // Stop the timer
       stopTimer();
     }
-  };
-  
-  const openAllGamesInTabs = () => {
-    // First, try to open a test popup to check if popups are allowed
-    const testPopup = window.open('about:blank', '_blank');
-    
-    if (!testPopup || testPopup.closed || typeof testPopup.closed === 'undefined') {
-      // Popup was blocked
-      toast({
-        title: "Popup Blocker Detected",
-        description: "We couldn't open all games because popups are blocked. Please allow popups for this site.",
-        variant: "destructive",
-      });
-      
-      // Show the popup help dialog
-      setPopupDialogOpen(true);
-      
-      // Don't start the timer if we can't open games
-      stopTimer();
-      return;
-    }
-    
-    // Close the test popup if it was successfully opened
-    testPopup.close();
-    
-    // Open all daily games in separate tabs
-    let allOpened = true;
-    
-    games.forEach((game, index) => {
-      // Add a small delay between each window.open to avoid triggering popup blockers
-      setTimeout(() => {
-        const gameWindow = window.open(game.url, '_blank', 'noopener,noreferrer');
-        if (!gameWindow) {
-          allOpened = false;
-        }
-      }, index * 300);
-    });
-    
-    // Show success message
-    toast({
-      title: "Games Opened",
-      description: "All games should now be opening in new tabs. The timer has started!",
-    });
-  };
-
-  const handleResultChange = (gameId: string, result: GameResults[string]) => {
-    console.log(`Setting result for ${gameId} to ${result}`);
-    
-    setGameResults(prev => {
-      const newResults = {
-        ...prev,
-        [gameId]: result
-      };
-      
-      return newResults;
-    });
   };
 
   const handleSubmitResults = () => {
