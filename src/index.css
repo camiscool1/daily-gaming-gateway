@@ -77,7 +77,7 @@
   }
   
   .game-card-thumbnail {
-    @apply w-full h-40 bg-muted object-cover transition-transform duration-500;
+    @apply w-full h-40 bg-muted object-cover;
   }
   
   .game-card-content {
@@ -96,4 +96,20 @@
   .glass {
     @apply bg-black/40 backdrop-blur-md border-white/10 shadow-sm;
   }
+}
+
+/* Animation for fade-in effect */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-slow {
+  animation: fade-in 0.8s ease-out forwards;
 }

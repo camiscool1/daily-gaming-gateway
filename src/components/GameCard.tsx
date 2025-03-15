@@ -10,7 +10,6 @@ interface GameCardProps {
 }
 
 const GameCard: React.FC<GameCardProps> = ({ game, delay }) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
 
   const handleClick = (e: React.MouseEvent) => {
@@ -20,10 +19,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, delay }) => {
 
   return (
     <div 
-      className={cn(
-        "game-card group",
-        "opacity-0",
-      )}
+      className="group opacity-0 game-card"
       style={{ 
         animationDelay: `${delay * 0.1}s`,
         animation: 'fade-in 0.5s ease-out forwards',
@@ -35,20 +31,25 @@ const GameCard: React.FC<GameCardProps> = ({ game, delay }) => {
       tabIndex={0}
     >
       <div className="relative overflow-hidden">
-        {!imageLoaded && (
-          <div className="game-card-thumbnail animate-pulse bg-muted" />
-        )}
+        {/* Background color as fallback */}
+        <div className="absolute inset-0 bg-secondary/50"></div>
+        
+        {/* Image */}
         <img
           src={game.thumbnailUrl}
           alt={`${game.title} thumbnail`}
-          className={cn(
-            "game-card-thumbnail group-hover:scale-[1.03]",
-            !imageLoaded && "hidden",
-            imageLoaded && "block transition-opacity duration-500"
-          )}
-          onLoad={() => setImageLoaded(true)}
+          className="game-card-thumbnail group-hover:scale-[1.03] transition-all duration-500"
           loading="lazy"
         />
+        
+        {/* Game title overlay on thumbnail */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+          <h3 className="text-xl font-bold text-white px-3 py-1 text-center">
+            {game.title}
+          </h3>
+        </div>
+        
+        {/* Hover effect */}
         <div 
           className={cn(
             "absolute inset-0 bg-primary/0 flex items-center justify-center transition-all duration-300",
