@@ -15,10 +15,15 @@ import { useCircuitTimer } from '@/hooks/useCircuitTimer';
 import PopupBlockerDialog from '@/components/PopupBlockerDialog';
 import CircuitGamesList from '@/components/CircuitGamesList';
 import CircuitControls from '@/components/CircuitControls';
+import CircuitResults, { GameResult, GameResults } from '@/components/CircuitResults';
+import CircuitSummary from '@/components/CircuitSummary';
 import { useDailyGames } from '@/hooks/useDailyGames';
 
 const DailyCircuit = () => {
   const [popupDialogOpen, setPopupDialogOpen] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
+  const [gameResults, setGameResults] = useState<GameResults>({});
   const { toast } = useToast();
   const dailyGames = useDailyGames(4);
   
@@ -34,6 +39,16 @@ const DailyCircuit = () => {
         title: "Circuit Complete!",
         description: `Your time: ${formatTime(elapsed)}`,
       });
+      
+      // Initialize results when timer stops
+      const initialResults: GameResults = {};
+      dailyGames.forEach(game => {
+        initialResults[game.id] = undefined;
+      });
+      setGameResults(initialResults);
+      
+      // Show results section
+      setShowResults(true);
     }
   });
   
@@ -91,6 +106,22 @@ const DailyCircuit = () => {
     });
   };
 
+  const handleResultChange = (gameId: string, result: GameResult) => {
+    setGameResults(prev => ({
+      ...prev,
+      [gameId]: result
+    }));
+  };
+
+  const handleSubmitResults = () => {
+    setShowSummary(true);
+  };
+
+  // Check if all game results have been selected
+  const allResultsSelected = dailyGames.every(game => 
+    gameResults[game.id] === 'completed' || gameResults[game.id] === 'failed'
+  );
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -139,6 +170,24 @@ const DailyCircuit = () => {
                     elapsedTime={elapsedTime}
                     formattedTime={formatTime(elapsedTime)}
                     onToggleTimer={toggleTimer}
+                  />
+
+                  <CircuitResults 
+                    isOpen={showResults && !showSummary}
+                    elapsedTime={elapsedTime}
+                    formattedTime={formatTime(elapsedTime)}
+                    games={dailyGames}
+                    results={gameResults}
+                    onResultChange={handleResultChange}
+                    onSubmit={handleSubmitResults}
+                    allResultsSelected={allResultsSelected}
+                  />
+
+                  <CircuitSummary
+                    show={showSummary}
+                    formattedTime={formatTime(elapsedTime)}
+                    games={dailyGames}
+                    results={gameResults}
                   />
                 </div>
               </div>
