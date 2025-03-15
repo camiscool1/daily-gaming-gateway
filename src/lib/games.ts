@@ -13,7 +13,7 @@ export const games: Game[] = [
     id: "bandle",
     title: "Bandle",
     url: "https://bandle.app/",
-    description: "Solve the band-based daily puzzle",
+    description: "Guess the band from song snippets",
     thumbnailUrl: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=600&auto=format&fit=crop",
     category: "Music"
   },
@@ -21,7 +21,7 @@ export const games: Game[] = [
     id: "costcodle",
     title: "Costcodle",
     url: "https://costcodle.com",
-    description: "Guess the Costco item",
+    description: "Guess the price of Costco products",
     thumbnailUrl: "https://images.unsplash.com/photo-1601598851547-4302969d0614?q=80&w=600&auto=format&fit=crop",
     category: "Shopping"
   },
@@ -61,7 +61,7 @@ export const games: Game[] = [
     id: "huddle",
     title: "Huddle",
     url: "https://www.huddlegame.com/",
-    description: "Test your sports knowledge",
+    description: "Guess the NFL player daily",
     thumbnailUrl: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?q=80&w=600&auto=format&fit=crop",
     category: "Sports"
   },
