@@ -36,6 +36,10 @@ const CircuitResults: React.FC<CircuitResultsProps> = ({
 }) => {
   const completedCount = Object.values(results).filter(r => r === 'completed').length;
 
+  // Debug log to check the value of allResultsSelected
+  console.log('All results selected:', allResultsSelected);
+  console.log('Current results:', results);
+
   return (
     <Collapsible open={isOpen} className="w-full mt-6">
       <CollapsibleContent className="animate-fade-in space-y-6 pt-4 pb-2">

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { GameType } from '@/lib/games';
@@ -25,6 +25,7 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
   const [showResults, setShowResults] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [gameResults, setGameResults] = useState<GameResults>({});
+  const [allResultsSelected, setAllResultsSelected] = useState(false);
   const { toast } = useToast();
   
   const { 
@@ -51,6 +52,16 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
       setShowResults(true);
     }
   });
+  
+  // Check if all results are selected whenever gameResults changes
+  useEffect(() => {
+    const allSelected = games.every(game => 
+      gameResults[game.id] === 'completed' || gameResults[game.id] === 'failed'
+    );
+    
+    setAllResultsSelected(allSelected);
+    console.log("Updated allResultsSelected:", allSelected);
+  }, [gameResults, games]);
   
   const toggleTimer = () => {
     if (!timerRunning) {
@@ -107,20 +118,19 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
   };
 
   const handleResultChange = (gameId: string, result: GameResults[string]) => {
-    setGameResults(prev => ({
-      ...prev,
-      [gameId]: result
-    }));
+    setGameResults(prev => {
+      const newResults = {
+        ...prev,
+        [gameId]: result
+      };
+      
+      return newResults;
+    });
   };
 
   const handleSubmitResults = () => {
     setSummaryOpen(true);
   };
-
-  // Check if all game results have been selected
-  const allResultsSelected = games.every(game => 
-    gameResults[game.id] === 'completed' || gameResults[game.id] === 'failed'
-  );
 
   return (
     <div className="grid gap-6 max-w-3xl mx-auto">
