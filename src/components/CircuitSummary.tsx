@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, X, Timer, Trophy, Copy, X as CloseIcon, Share2 } from 'lucide-react';
+import { Check, X, Timer, Trophy, Copy, X as CloseIcon, Share2, Calendar } from 'lucide-react';
 import { GameType } from '@/lib/games';
 import { GameResults } from './CircuitResults';
 import { 
@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
 
 interface CircuitSummaryProps {
   open: boolean;
@@ -31,13 +32,14 @@ const CircuitSummary: React.FC<CircuitSummaryProps> = ({
   results
 }) => {
   const { toast } = useToast();
+  const today = new Date();
+  const formattedDate = format(today, 'MMMM d, yyyy');
   
   const completedCount = Object.values(results).filter(r => r === 'completed').length;
   const completionRate = (completedCount / games.length) * 100;
   
   const generateShareableText = () => {
-    const date = new Date().toLocaleDateString();
-    return `Daily Circuit (${date}): ${completedCount}/${games.length} games completed in ${formattedTime}! Check out my results at: ${window.location.href}`;
+    return `Daily Circuit (${formattedDate}): ${completedCount}/${games.length} games completed in ${formattedTime}! Check out my results at: ${window.location.href}`;
   };
   
   const copyToClipboard = () => {
@@ -67,6 +69,10 @@ const CircuitSummary: React.FC<CircuitSummaryProps> = ({
             Circuit Complete!
           </DialogTitle>
           <DialogDescription className="text-center">
+            <div className="flex items-center justify-center gap-1 text-sm mt-1">
+              <Calendar className="w-4 h-4 text-muted-foreground" />
+              <span>{formattedDate}</span>
+            </div>
             <div className="text-lg font-mono font-semibold mt-2">
               {formattedTime}
             </div>
