@@ -45,11 +45,11 @@ const Index = () => {
             "flex justify-center mb-6 opacity-0",
             isLoaded && "animate-fade-in-slow"
           )}>
-            <Link to="/daily-circuit">
-              <Button size="lg" className="group relative overflow-hidden px-6 py-8 text-lg shadow-lg hover:shadow-xl transition-all duration-300">
+            <Link to="/daily-circuit" className="w-full max-w-md">
+              <Button size="lg" className="w-full group relative overflow-hidden py-8 text-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="absolute inset-0 bg-primary opacity-80 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative flex items-center gap-2 z-10">
-                  <Zap className="w-5 h-5" />
+                <div className="relative flex items-center justify-center gap-2 z-10">
+                  <Zap className="w-6 h-6" />
                   <span>Play The Daily Circuit</span>
                 </div>
               </Button>
