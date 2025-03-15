@@ -60,7 +60,7 @@ const CircuitSummary: React.FC<CircuitSummaryProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md md:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-center gap-2 text-2xl">
             <Trophy className="w-6 h-6 text-primary" />
@@ -76,24 +76,25 @@ const CircuitSummary: React.FC<CircuitSummaryProps> = ({
         <div className="space-y-5 pt-2">
           <h4 className="font-semibold text-lg text-center">Your Results</h4>
           
-          <div className="flex justify-center gap-3">
+          <div className="flex justify-center gap-6 mb-8">
             {games.map((game) => {
               const isCompleted = results[game.id] === 'completed';
               return (
                 <div
                   key={game.id}
-                  className={`relative flex items-center justify-center rounded-full p-2 ${
-                    isCompleted ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'
-                  }`}
-                  title={`${game.title}: ${isCompleted ? 'Completed' : 'Failed'}`}
+                  className="flex flex-col items-center"
                 >
-                  {isCompleted ? (
-                    <Check className="w-5 h-5 text-green-600 dark:text-green-500" />
-                  ) : (
-                    <X className="w-5 h-5 text-red-600 dark:text-red-500" />
-                  )}
-                  <div className="absolute -bottom-6 text-xs whitespace-nowrap overflow-hidden max-w-12 text-ellipsis text-center">
-                    {game.title.split(' ')[0]}
+                  <div className={`flex items-center justify-center w-12 h-12 rounded-full mb-2 ${
+                    isCompleted ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'
+                  }`}>
+                    {isCompleted ? (
+                      <Check className="w-6 h-6 text-green-600 dark:text-green-500" />
+                    ) : (
+                      <X className="w-6 h-6 text-red-600 dark:text-red-500" />
+                    )}
+                  </div>
+                  <div className="text-xs text-center w-20 overflow-hidden text-ellipsis">
+                    {game.title}
                   </div>
                 </div>
               );
