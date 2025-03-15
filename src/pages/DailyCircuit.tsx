@@ -80,17 +80,16 @@ const DailyCircuit = () => {
                 </p>
                 
                 <div className="space-y-6">
-                  <ol className="space-y-4 text-left">
-                    {dailyGames.map((game, index) => (
+                  <ul className="space-y-4 text-left">
+                    {dailyGames.map((game) => (
                       <li key={game.id} className="p-4 bg-secondary rounded-lg flex items-center gap-4">
-                        <div className="bg-primary/10 text-primary font-bold rounded-full w-8 h-8 flex items-center justify-center">{index + 1}</div>
                         <div>
                           <h3 className="font-medium">{game.title}</h3>
                           <p className="text-sm text-muted-foreground">{game.description}</p>
                         </div>
                       </li>
                     ))}
-                  </ol>
+                  </ul>
                   
                   <div className="pt-4 flex justify-center">
                     <Button 
