@@ -1,11 +1,10 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ExternalLink, AlertCircle } from 'lucide-react';
+import { ArrowLeft, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { games, GameType } from '@/lib/games';
 import { useToast } from '@/hooks/use-toast';
 import {
   Alert,
@@ -16,11 +15,12 @@ import { useCircuitTimer } from '@/hooks/useCircuitTimer';
 import PopupBlockerDialog from '@/components/PopupBlockerDialog';
 import CircuitGamesList from '@/components/CircuitGamesList';
 import CircuitControls from '@/components/CircuitControls';
+import { useDailyGames } from '@/hooks/useDailyGames';
 
 const DailyCircuit = () => {
-  const [dailyGames, setDailyGames] = useState<GameType[]>([]);
   const [popupDialogOpen, setPopupDialogOpen] = useState(false);
   const { toast } = useToast();
+  const dailyGames = useDailyGames(4);
   
   const { 
     timerRunning, 
@@ -36,37 +36,6 @@ const DailyCircuit = () => {
       });
     }
   });
-
-  useEffect(() => {
-    // Function to get a deterministic random set of games based on the current date
-    const getRandomGamesForToday = () => {
-      const today = new Date();
-      const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-      
-      // Use the date string as a seed for randomization
-      const seededRandom = (min: number, max: number, seed: string) => {
-        const seedNum = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const x = Math.sin(seedNum) * 10000;
-        return Math.floor((x - Math.floor(x)) * (max - min + 1)) + min;
-      };
-      
-      // Create a copy of games array to avoid mutating the original
-      const gamesCopy = [...games];
-      const selectedGames = [];
-      
-      // Select 4 random games
-      for (let i = 0; i < 4; i++) {
-        if (gamesCopy.length === 0) break;
-        
-        const randomIndex = seededRandom(0, gamesCopy.length - 1, `${dateString}-${i}`);
-        selectedGames.push(gamesCopy.splice(randomIndex, 1)[0]);
-      }
-      
-      return selectedGames;
-    };
-    
-    setDailyGames(getRandomGamesForToday());
-  }, []);
   
   const toggleTimer = () => {
     if (!timerRunning) {
