@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ExternalLink, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ExternalLink, AlertCircle, Timer, TimerOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { games } from '@/lib/games';
 import { useToast } from '@/hooks/use-toast';
@@ -19,11 +19,47 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
 
 const DailyCircuit = () => {
   const [dailyGames, setDailyGames] = useState<typeof games>([]);
   const [popupDialogOpen, setPopupDialogOpen] = useState(false);
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [timerStartTime, setTimerStartTime] = useState(0);
   const { toast } = useToast();
+
+  // Timer effect - runs when timerRunning changes
+  useEffect(() => {
+    let timerInterval: number | undefined;
+    
+    if (timerRunning) {
+      // Start the timer
+      timerInterval = window.setInterval(() => {
+        const now = Date.now();
+        const elapsed = now - timerStartTime;
+        setElapsedTime(elapsed);
+      }, 100); // Update every 100ms for smoother display
+    } else {
+      // Timer is stopped
+      clearInterval(timerInterval);
+    }
+    
+    // Clean up on unmount or when timerRunning changes
+    return () => {
+      if (timerInterval) clearInterval(timerInterval);
+    };
+  }, [timerRunning, timerStartTime]);
+
+  // Format time as mm:ss.ms
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const milliseconds = Math.floor((ms % 1000) / 10); // Get only 2 digits
+    
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+  };
 
   useEffect(() => {
     // Function to get a deterministic random set of games based on the current date
@@ -56,6 +92,24 @@ const DailyCircuit = () => {
     setDailyGames(getRandomGamesForToday());
   }, []);
   
+  const toggleTimer = () => {
+    if (!timerRunning) {
+      // Start the timer
+      setTimerStartTime(Date.now());
+      setTimerRunning(true);
+      openAllGamesInTabs();
+    } else {
+      // Stop the timer
+      setTimerRunning(false);
+      
+      // Show elapsed time in toast
+      toast({
+        title: "Circuit Complete!",
+        description: `Your time: ${formatTime(elapsedTime)}`,
+      });
+    }
+  };
+  
   const openAllGamesInTabs = () => {
     // First, try to open a test popup to check if popups are allowed
     const testPopup = window.open('about:blank', '_blank');
@@ -70,6 +124,9 @@ const DailyCircuit = () => {
       
       // Show the popup help dialog
       setPopupDialogOpen(true);
+      
+      // Don't start the timer if we can't open games
+      setTimerRunning(false);
       return;
     }
     
@@ -92,7 +149,7 @@ const DailyCircuit = () => {
     // Show success message
     toast({
       title: "Games Opened",
-      description: "All games should now be opening in new tabs.",
+      description: "All games should now be opening in new tabs. The timer has started!",
     });
   };
 
@@ -136,6 +193,15 @@ const DailyCircuit = () => {
                   </AlertDescription>
                 </Alert>
                 
+                {timerRunning && (
+                  <div className="mb-6">
+                    <div className="text-3xl font-mono text-center mb-2">
+                      {formatTime(elapsedTime)}
+                    </div>
+                    <Progress value={100} className="h-2" />
+                  </div>
+                )}
+                
                 <div className="space-y-6">
                   <ul className="space-y-4 text-left">
                     {dailyGames.map((game) => (
@@ -151,11 +217,20 @@ const DailyCircuit = () => {
                   <div className="pt-4 flex justify-center">
                     <Button 
                       size="lg" 
-                      className="gap-2 text-lg py-6 px-8 shadow-lg hover:shadow-xl transition-all duration-300"
-                      onClick={openAllGamesInTabs}
+                      className={`gap-2 text-lg py-6 px-8 shadow-lg hover:shadow-xl transition-all duration-300 ${timerRunning ? 'bg-destructive hover:bg-destructive/90' : ''}`}
+                      onClick={toggleTimer}
                     >
-                      <ExternalLink className="w-5 h-5" />
-                      Open All Games
+                      {timerRunning ? (
+                        <>
+                          <TimerOff className="w-5 h-5" />
+                          Stop Timer
+                        </>
+                      ) : (
+                        <>
+                          <Timer className="w-5 h-5" />
+                          Open All Games
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
