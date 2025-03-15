@@ -5,6 +5,9 @@ import GameCard from '@/components/GameCard';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { Zap } from 'lucide-react';
 
 const Index = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -35,6 +38,22 @@ const Index = () => {
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Discover a curated collection of daily games to challenge your mind and brighten your day.
             </p>
+          </section>
+          
+          {/* Daily Circuit Button */}
+          <section className={cn(
+            "flex justify-center mb-6 opacity-0",
+            isLoaded && "animate-fade-in-slow"
+          )}>
+            <Link to="/daily-circuit">
+              <Button size="lg" className="group relative overflow-hidden px-6 py-8 text-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                <div className="absolute inset-0 bg-primary opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative flex items-center gap-2 z-10">
+                  <Zap className="w-5 h-5" />
+                  <span>Play The Daily Circuit</span>
+                </div>
+              </Button>
+            </Link>
           </section>
           
           {/* Games Grid */}
