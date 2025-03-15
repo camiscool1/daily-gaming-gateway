@@ -1,4 +1,3 @@
-
 export interface Game {
   id: string;
   title: string;
@@ -7,6 +6,8 @@ export interface Game {
   thumbnailUrl: string;
   category: string;
 }
+
+export type GameType = typeof games[0];
 
 export const games: Game[] = [
   {

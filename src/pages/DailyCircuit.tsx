@@ -3,63 +3,39 @@ import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ExternalLink, AlertCircle, Timer, TimerOff } from 'lucide-react';
+import { ArrowLeft, ExternalLink, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { games } from '@/lib/games';
+import { games, GameType } from '@/lib/games';
 import { useToast } from '@/hooks/use-toast';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
+import { useCircuitTimer } from '@/hooks/useCircuitTimer';
+import PopupBlockerDialog from '@/components/PopupBlockerDialog';
+import CircuitGamesList from '@/components/CircuitGamesList';
+import CircuitControls from '@/components/CircuitControls';
 
 const DailyCircuit = () => {
-  const [dailyGames, setDailyGames] = useState<typeof games>([]);
+  const [dailyGames, setDailyGames] = useState<GameType[]>([]);
   const [popupDialogOpen, setPopupDialogOpen] = useState(false);
-  const [timerRunning, setTimerRunning] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [timerStartTime, setTimerStartTime] = useState(0);
   const { toast } = useToast();
-
-  // Timer effect - runs when timerRunning changes
-  useEffect(() => {
-    let timerInterval: number | undefined;
-    
-    if (timerRunning) {
-      // Start the timer
-      timerInterval = window.setInterval(() => {
-        const now = Date.now();
-        const elapsed = now - timerStartTime;
-        setElapsedTime(elapsed);
-      }, 100); // Update every 100ms for smoother display
-    } else {
-      // Timer is stopped
-      clearInterval(timerInterval);
+  
+  const { 
+    timerRunning, 
+    elapsedTime, 
+    formatTime, 
+    startTimer, 
+    stopTimer 
+  } = useCircuitTimer({
+    onTimerStop: (elapsed) => {
+      toast({
+        title: "Circuit Complete!",
+        description: `Your time: ${formatTime(elapsed)}`,
+      });
     }
-    
-    // Clean up on unmount or when timerRunning changes
-    return () => {
-      if (timerInterval) clearInterval(timerInterval);
-    };
-  }, [timerRunning, timerStartTime]);
-
-  // Format time as mm:ss.ms
-  const formatTime = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    const milliseconds = Math.floor((ms % 1000) / 10); // Get only 2 digits
-    
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
-  };
+  });
 
   useEffect(() => {
     // Function to get a deterministic random set of games based on the current date
@@ -95,18 +71,11 @@ const DailyCircuit = () => {
   const toggleTimer = () => {
     if (!timerRunning) {
       // Start the timer
-      setTimerStartTime(Date.now());
-      setTimerRunning(true);
+      startTimer();
       openAllGamesInTabs();
     } else {
       // Stop the timer
-      setTimerRunning(false);
-      
-      // Show elapsed time in toast
-      toast({
-        title: "Circuit Complete!",
-        description: `Your time: ${formatTime(elapsedTime)}`,
-      });
+      stopTimer();
     }
   };
   
@@ -126,7 +95,7 @@ const DailyCircuit = () => {
       setPopupDialogOpen(true);
       
       // Don't start the timer if we can't open games
-      setTimerRunning(false);
+      stopTimer();
       return;
     }
     
@@ -193,46 +162,15 @@ const DailyCircuit = () => {
                   </AlertDescription>
                 </Alert>
                 
-                {timerRunning && (
-                  <div className="mb-6">
-                    <div className="text-3xl font-mono text-center mb-2">
-                      {formatTime(elapsedTime)}
-                    </div>
-                    <Progress value={100} className="h-2" />
-                  </div>
-                )}
-                
                 <div className="space-y-6">
-                  <ul className="space-y-4 text-left">
-                    {dailyGames.map((game) => (
-                      <li key={game.id} className="p-4 bg-secondary rounded-lg flex items-center gap-4">
-                        <div>
-                          <h3 className="font-medium">{game.title}</h3>
-                          <p className="text-sm text-muted-foreground">{game.description}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                  <CircuitGamesList games={dailyGames} />
                   
-                  <div className="pt-4 flex justify-center">
-                    <Button 
-                      size="lg" 
-                      className={`gap-2 text-lg py-6 px-8 shadow-lg hover:shadow-xl transition-all duration-300 ${timerRunning ? 'bg-destructive hover:bg-destructive/90' : ''}`}
-                      onClick={toggleTimer}
-                    >
-                      {timerRunning ? (
-                        <>
-                          <TimerOff className="w-5 h-5" />
-                          Stop Timer
-                        </>
-                      ) : (
-                        <>
-                          <Timer className="w-5 h-5" />
-                          Open All Games
-                        </>
-                      )}
-                    </Button>
-                  </div>
+                  <CircuitControls
+                    timerRunning={timerRunning}
+                    elapsedTime={elapsedTime}
+                    formattedTime={formatTime(elapsedTime)}
+                    onToggleTimer={toggleTimer}
+                  />
                 </div>
               </div>
             </div>
@@ -241,60 +179,10 @@ const DailyCircuit = () => {
       </main>
       
       {/* Popup Help Dialog */}
-      <Dialog open={popupDialogOpen} onOpenChange={setPopupDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Enable Popups to Use the Circuit</DialogTitle>
-            <DialogDescription>
-              To open all games in the circuit, you need to allow popups for this site. Follow these instructions for your browser:
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 text-sm">
-            <div>
-              <h3 className="font-medium mb-1">Google Chrome</h3>
-              <ol className="list-decimal pl-5 space-y-1">
-                <li>Look for the popup blocked icon <span className="px-1 py-0.5 bg-gray-100 rounded">🚫</span> in the address bar</li>
-                <li>Click on it and select "Always allow popups from this site"</li>
-                <li>Click "Done" and try again</li>
-              </ol>
-            </div>
-            
-            <div>
-              <h3 className="font-medium mb-1">Firefox</h3>
-              <ol className="list-decimal pl-5 space-y-1">
-                <li>Click on the popup notification at the top of the page</li>
-                <li>Select "Preferences" and choose "Allow popups for this site"</li>
-                <li>Try again</li>
-              </ol>
-            </div>
-            
-            <div>
-              <h3 className="font-medium mb-1">Safari</h3>
-              <ol className="list-decimal pl-5 space-y-1">
-                <li>Go to Safari &gt; Preferences &gt; Websites &gt; Pop-up Windows</li>
-                <li>Find this website and set it to "Allow"</li>
-                <li>Reload the page and try again</li>
-              </ol>
-            </div>
-            
-            <div>
-              <h3 className="font-medium mb-1">Edge</h3>
-              <ol className="list-decimal pl-5 space-y-1">
-                <li>Click on the popup notification in the address bar</li>
-                <li>Select "Always allow popups from this site"</li>
-                <li>Try again</li>
-              </ol>
-            </div>
-          </div>
-          
-          <div className="flex justify-center mt-2">
-            <Button onClick={() => setPopupDialogOpen(false)}>
-              I'll Enable Popups
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <PopupBlockerDialog 
+        open={popupDialogOpen} 
+        onOpenChange={setPopupDialogOpen} 
+      />
       
       <Footer />
     </div>
