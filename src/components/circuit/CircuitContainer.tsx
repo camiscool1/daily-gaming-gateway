@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { GameType } from '@/lib/games';
 import {
@@ -18,6 +18,8 @@ import CircuitGamesList from '@/components/CircuitGamesList';
 import CircuitControls from '@/components/CircuitControls';
 import CircuitResults from '@/components/CircuitResults';
 import CircuitSummary from '@/components/CircuitSummary';
+import CircuitInstructions from '@/components/CircuitInstructions';
+import { Button } from '@/components/ui/button';
 
 interface CircuitContainerProps {
   games: GameType[];
@@ -26,6 +28,7 @@ interface CircuitContainerProps {
 const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
   const [showResults, setShowResults] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
+  const [instructionsOpen, setInstructionsOpen] = useState(false);
   const { toast } = useToast();
   
   const { popupDialogOpen, setPopupDialogOpen, checkPopupBlocker } = usePopupBlocker();
@@ -88,7 +91,18 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
   return (
     <div className="grid gap-6 max-w-3xl mx-auto">
       <div className="p-6 bg-card rounded-xl border shadow-sm">
-        <h2 className="text-2xl font-semibold mb-4">Today's Circuit</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold">Today's Circuit</h2>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-2" 
+            onClick={() => setInstructionsOpen(true)}
+          >
+            <Info className="h-4 w-4" />
+            How It Works
+          </Button>
+        </div>
         <p className="text-muted-foreground mb-6">
           These games were randomly selected for today. A new set will be available tomorrow!
         </p>
@@ -129,6 +143,11 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
             formattedTime={formatTime(elapsedTime)}
             games={games}
             results={gameResults}
+          />
+
+          <CircuitInstructions
+            open={instructionsOpen}
+            onOpenChange={setInstructionsOpen}
           />
         </div>
       </div>
