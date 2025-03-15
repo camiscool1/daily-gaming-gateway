@@ -94,7 +94,7 @@ export const games: Game[] = [
     title: "Globle",
     url: "https://globle-game.com/",
     description: "Guess the country by proximity",
-    thumbnailUrl: "https://images.unsplash.com/photo-1526778548025-fa2f459cd5ce?q=80&w=600&auto=format&fit=crop",
+    thumbnailUrl: "https://images.unsplash.com/photo-1619468129361-605ebea04b44?q=80&w=600&auto=format&fit=crop",
     category: "Geography"
   },
   {
@@ -102,7 +102,7 @@ export const games: Game[] = [
     title: "Worldle",
     url: "https://worldle.teuteuf.fr/",
     description: "Identify countries by their shape",
-    thumbnailUrl: "https://images.unsplash.com/photo-1530095830103-cbd65eb2cba4?q=80&w=600&auto=format&fit=crop",
+    thumbnailUrl: "https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?q=80&w=600&auto=format&fit=crop",
     category: "Geography"
   },
   {
@@ -118,7 +118,7 @@ export const games: Game[] = [
     title: "Connections",
     url: "https://www.nytimes.com/games/connections",
     description: "Group words by their connections",
-    thumbnailUrl: "https://images.unsplash.com/photo-1509228627152-72ae86a3be56?q=80&w=600&auto=format&fit=crop",
+    thumbnailUrl: "https://images.unsplash.com/photo-1590779033100-9f60a05a013d?q=80&w=600&auto=format&fit=crop",
     category: "Words"
   },
   {
@@ -126,7 +126,7 @@ export const games: Game[] = [
     title: "Wordle",
     url: "https://www.nytimes.com/games/wordle/index.html",
     description: "Guess the five-letter word",
-    thumbnailUrl: "https://images.unsplash.com/photo-1632953036398-7cc69e63d16a?q=80&w=600&auto=format&fit=crop",
+    thumbnailUrl: "https://images.unsplash.com/photo-1564442038901-4f9a19d3d456?q=80&w=600&auto=format&fit=crop",
     category: "Words"
   },
   {

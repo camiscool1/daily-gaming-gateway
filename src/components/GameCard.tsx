@@ -66,7 +66,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, delay }) => {
       <div className="game-card-content">
         <div className="flex items-start justify-between mb-2">
           <h3 className="game-card-title">{game.title}</h3>
-          <span className="game-card-category">{game.category}</span>
+          {/* Category tag removed as requested */}
         </div>
         <p className="text-sm text-muted-foreground">{game.description}</p>
         <a 
