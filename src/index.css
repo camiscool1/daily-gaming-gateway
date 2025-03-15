@@ -77,15 +77,15 @@
   }
   
   .game-card-thumbnail {
-    @apply w-full h-40 bg-muted object-cover;
+    @apply w-full h-32 bg-muted object-cover;
   }
   
   .game-card-content {
-    @apply p-4 transition-colors;
+    @apply p-3 transition-colors;
   }
 
   .game-card-title {
-    @apply text-lg font-medium text-card-foreground;
+    @apply text-base font-medium text-card-foreground;
   }
 
   .game-card-category {
