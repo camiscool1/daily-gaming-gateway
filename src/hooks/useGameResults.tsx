@@ -20,11 +20,12 @@ export function useGameResults(games: GameType[]) {
   
   // Check if all results are selected whenever gameResults changes
   useEffect(() => {
-    if (Object.keys(gameResults).length === 0) {
+    if (Object.keys(gameResults).length === 0 || games.length === 0) {
       setAllResultsSelected(false);
       return;
     }
     
+    // Explicitly check that every game has either 'completed' or 'failed'
     const allSelected = games.every(game => 
       gameResults[game.id] === 'completed' || gameResults[game.id] === 'failed'
     );
@@ -49,10 +50,22 @@ export function useGameResults(games: GameType[]) {
     });
   };
 
+  // Add a utility function to check if all results are selected
+  const areAllResultsSelected = (): boolean => {
+    if (Object.keys(gameResults).length === 0 || games.length === 0) {
+      return false;
+    }
+    
+    return games.every(game => 
+      gameResults[game.id] === 'completed' || gameResults[game.id] === 'failed'
+    );
+  };
+
   return {
     gameResults,
     setGameResults,
     allResultsSelected,
+    areAllResultsSelected,
     handleResultChange
   };
 }

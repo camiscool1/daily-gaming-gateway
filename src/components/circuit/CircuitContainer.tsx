@@ -29,7 +29,7 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
   const { toast } = useToast();
   
   const { popupDialogOpen, setPopupDialogOpen, checkPopupBlocker } = usePopupBlocker();
-  const { gameResults, allResultsSelected, handleResultChange } = useGameResults(games);
+  const { gameResults, allResultsSelected, handleResultChange, areAllResultsSelected } = useGameResults(games);
   const { openAllGamesInTabs } = useGameWindows();
   
   const { 
@@ -67,12 +67,14 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
   };
 
   const handleSubmitResults = () => {
-    // Double check that all results are selected before opening summary
-    const allResultsCompleted = games.every(game => 
-      gameResults[game.id] === 'completed' || gameResults[game.id] === 'failed'
-    );
+    // Use both the hook state and a direct check
+    const canShowSummary = allResultsSelected || areAllResultsSelected();
     
-    if (allResultsCompleted) {
+    console.log("Submit results - allResultsSelected:", allResultsSelected);
+    console.log("Submit results - areAllResultsSelected():", areAllResultsSelected());
+    console.log("Submit results - canShowSummary:", canShowSummary);
+    
+    if (canShowSummary) {
       setSummaryOpen(true);
     } else {
       toast({

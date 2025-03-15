@@ -36,17 +36,20 @@ const CircuitResults: React.FC<CircuitResultsProps> = ({
 }) => {
   const completedCount = Object.values(results).filter(r => r === 'completed').length;
 
-  // Check if all results have values
+  // Create a local check for all results
   const hasAllResults = games.every(game => 
     results[game.id] === 'completed' || results[game.id] === 'failed'
   );
 
-  // Debug log to check the value of allResultsSelected
-  console.log('All results selected:', allResultsSelected);
-  console.log('Current results:', results);
-  console.log('Local check - hasAllResults:', hasAllResults);
-  console.log('Games:', games.map(g => g.id));
-  console.log('Result keys:', Object.keys(results));
+  // Use either the prop or our local check (belt and suspenders approach)
+  const isSubmitEnabled = allResultsSelected || hasAllResults;
+
+  // Debug logs
+  console.log('CircuitResults - allResultsSelected (prop):', allResultsSelected);
+  console.log('CircuitResults - hasAllResults (local):', hasAllResults);
+  console.log('CircuitResults - isSubmitEnabled:', isSubmitEnabled);
+  console.log('CircuitResults - Current results:', results);
+  console.log('CircuitResults - Games:', games.map(g => g.id));
 
   return (
     <Collapsible open={isOpen} className="w-full mt-6">
@@ -96,7 +99,7 @@ const CircuitResults: React.FC<CircuitResultsProps> = ({
           <div className="mt-8 flex justify-center">
             <Button 
               onClick={onSubmit} 
-              disabled={!hasAllResults}
+              disabled={!isSubmitEnabled}
               className="gap-2"
             >
               View Summary
