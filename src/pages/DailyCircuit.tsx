@@ -1,12 +1,53 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { games } from '@/lib/games';
 
 const DailyCircuit = () => {
+  const [dailyGames, setDailyGames] = useState<typeof games>([]);
+
+  useEffect(() => {
+    // Function to get a deterministic random set of games based on the current date
+    const getRandomGamesForToday = () => {
+      const today = new Date();
+      const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+      
+      // Use the date string as a seed for randomization
+      const seededRandom = (min: number, max: number, seed: string) => {
+        const seedNum = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const x = Math.sin(seedNum) * 10000;
+        return Math.floor((x - Math.floor(x)) * (max - min + 1)) + min;
+      };
+      
+      // Create a copy of games array to avoid mutating the original
+      const gamesCopy = [...games];
+      const selectedGames = [];
+      
+      // Select 4 random games
+      for (let i = 0; i < 4; i++) {
+        if (gamesCopy.length === 0) break;
+        
+        const randomIndex = seededRandom(0, gamesCopy.length - 1, `${dateString}-${i}`);
+        selectedGames.push(gamesCopy.splice(randomIndex, 1)[0]);
+      }
+      
+      return selectedGames;
+    };
+    
+    setDailyGames(getRandomGamesForToday());
+  }, []);
+  
+  const openAllGamesInTabs = () => {
+    // Open all daily games in separate tabs
+    dailyGames.forEach(game => {
+      window.open(game.url, '_blank');
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -35,49 +76,33 @@ const DailyCircuit = () => {
               <div className="p-6 bg-card rounded-xl border shadow-sm">
                 <h2 className="text-2xl font-semibold mb-4">Today's Circuit</h2>
                 <p className="text-muted-foreground mb-6">
-                  Complete these games in order for the best experience:
+                  These games were randomly selected for today. A new set will be available tomorrow!
                 </p>
                 
-                <ol className="space-y-4 text-left">
-                  <li className="p-4 bg-secondary rounded-lg flex items-center gap-4">
-                    <div className="bg-primary/10 text-primary font-bold rounded-full w-8 h-8 flex items-center justify-center">1</div>
-                    <div>
-                      <h3 className="font-medium">Wordle</h3>
-                      <p className="text-sm text-muted-foreground">Start with a word challenge</p>
-                    </div>
-                    <div className="ml-auto">
-                      <a href="https://www.nytimes.com/games/wordle/index.html" target="_blank" rel="noopener noreferrer">
-                        <Button size="sm">Play</Button>
-                      </a>
-                    </div>
-                  </li>
+                <div className="space-y-6">
+                  <ol className="space-y-4 text-left">
+                    {dailyGames.map((game, index) => (
+                      <li key={game.id} className="p-4 bg-secondary rounded-lg flex items-center gap-4">
+                        <div className="bg-primary/10 text-primary font-bold rounded-full w-8 h-8 flex items-center justify-center">{index + 1}</div>
+                        <div>
+                          <h3 className="font-medium">{game.title}</h3>
+                          <p className="text-sm text-muted-foreground">{game.description}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
                   
-                  <li className="p-4 bg-secondary rounded-lg flex items-center gap-4">
-                    <div className="bg-primary/10 text-primary font-bold rounded-full w-8 h-8 flex items-center justify-center">2</div>
-                    <div>
-                      <h3 className="font-medium">Connections</h3>
-                      <p className="text-sm text-muted-foreground">Find patterns and groupings</p>
-                    </div>
-                    <div className="ml-auto">
-                      <a href="https://www.nytimes.com/games/connections" target="_blank" rel="noopener noreferrer">
-                        <Button size="sm">Play</Button>
-                      </a>
-                    </div>
-                  </li>
-                  
-                  <li className="p-4 bg-secondary rounded-lg flex items-center gap-4">
-                    <div className="bg-primary/10 text-primary font-bold rounded-full w-8 h-8 flex items-center justify-center">3</div>
-                    <div>
-                      <h3 className="font-medium">Globle</h3>
-                      <p className="text-sm text-muted-foreground">Test your geography knowledge</p>
-                    </div>
-                    <div className="ml-auto">
-                      <a href="https://globle-game.com/" target="_blank" rel="noopener noreferrer">
-                        <Button size="sm">Play</Button>
-                      </a>
-                    </div>
-                  </li>
-                </ol>
+                  <div className="pt-4 flex justify-center">
+                    <Button 
+                      size="lg" 
+                      className="gap-2 text-lg py-6 px-8 shadow-lg hover:shadow-xl transition-all duration-300"
+                      onClick={openAllGamesInTabs}
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                      Open All Games
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
