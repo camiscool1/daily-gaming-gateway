@@ -55,12 +55,20 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
   
   // Check if all results are selected whenever gameResults changes
   useEffect(() => {
+    if (Object.keys(gameResults).length === 0) {
+      setAllResultsSelected(false);
+      return;
+    }
+    
     const allSelected = games.every(game => 
       gameResults[game.id] === 'completed' || gameResults[game.id] === 'failed'
     );
     
+    console.log("Checking results for all games:", games.map(game => game.id));
+    console.log("Current results:", gameResults);
+    console.log("All selected:", allSelected);
+    
     setAllResultsSelected(allSelected);
-    console.log("Updated allResultsSelected:", allSelected);
   }, [gameResults, games]);
   
   const toggleTimer = () => {
@@ -118,6 +126,8 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
   };
 
   const handleResultChange = (gameId: string, result: GameResults[string]) => {
+    console.log(`Setting result for ${gameId} to ${result}`);
+    
     setGameResults(prev => {
       const newResults = {
         ...prev,

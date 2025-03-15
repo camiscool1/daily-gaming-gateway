@@ -36,9 +36,17 @@ const CircuitResults: React.FC<CircuitResultsProps> = ({
 }) => {
   const completedCount = Object.values(results).filter(r => r === 'completed').length;
 
+  // Check if all results have values
+  const hasAllResults = games.every(game => 
+    results[game.id] === 'completed' || results[game.id] === 'failed'
+  );
+
   // Debug log to check the value of allResultsSelected
   console.log('All results selected:', allResultsSelected);
   console.log('Current results:', results);
+  console.log('Local check - hasAllResults:', hasAllResults);
+  console.log('Games:', games.map(g => g.id));
+  console.log('Result keys:', Object.keys(results));
 
   return (
     <Collapsible open={isOpen} className="w-full mt-6">
@@ -88,7 +96,7 @@ const CircuitResults: React.FC<CircuitResultsProps> = ({
           <div className="mt-8 flex justify-center">
             <Button 
               onClick={onSubmit} 
-              disabled={!allResultsSelected}
+              disabled={!hasAllResults}
               className="gap-2"
             >
               View Summary
