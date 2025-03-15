@@ -22,7 +22,7 @@ import { useDailyGames } from '@/hooks/useDailyGames';
 const DailyCircuit = () => {
   const [popupDialogOpen, setPopupDialogOpen] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [showSummary, setShowSummary] = useState(false);
+  const [summaryOpen, setSummaryOpen] = useState(false);
   const [gameResults, setGameResults] = useState<GameResults>({});
   const { toast } = useToast();
   const dailyGames = useDailyGames(4);
@@ -114,7 +114,7 @@ const DailyCircuit = () => {
   };
 
   const handleSubmitResults = () => {
-    setShowSummary(true);
+    setSummaryOpen(true);
   };
 
   // Check if all game results have been selected
@@ -173,7 +173,7 @@ const DailyCircuit = () => {
                   />
 
                   <CircuitResults 
-                    isOpen={showResults && !showSummary}
+                    isOpen={showResults}
                     elapsedTime={elapsedTime}
                     formattedTime={formatTime(elapsedTime)}
                     games={dailyGames}
@@ -184,7 +184,8 @@ const DailyCircuit = () => {
                   />
 
                   <CircuitSummary
-                    show={showSummary}
+                    open={summaryOpen}
+                    onOpenChange={setSummaryOpen}
                     formattedTime={formatTime(elapsedTime)}
                     games={dailyGames}
                     results={gameResults}
