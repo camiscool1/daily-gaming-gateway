@@ -9,25 +9,32 @@ export function useDailyGames(numberOfGames: number = 4) {
     // Function to get a deterministic random set of games based on the current date
     const getRandomGamesForToday = () => {
       const today = new Date();
-      const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+      // Use UTC date to ensure global consistency regardless of time zone
+      const dateString = `${today.getUTCFullYear()}-${today.getUTCMonth() + 1}-${today.getUTCDate()}`;
       
       // Use the date string as a seed for randomization
-      const seededRandom = (min: number, max: number, seed: string) => {
-        const seedNum = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const x = Math.sin(seedNum) * 10000;
-        return Math.floor((x - Math.floor(x)) * (max - min + 1)) + min;
+      const seededRandom = (seed: string) => {
+        // Create a more consistent hash from the seed string
+        let hash = 0;
+        for (let i = 0; i < seed.length; i++) {
+          const char = seed.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash = hash & hash; // Convert to 32bit integer
+        }
+        // Normalize to [0, 1] range
+        return Math.abs(hash) / 2147483647;
       };
       
       // Create a copy of games array to avoid mutating the original
       const gamesCopy = [...games];
       const selectedGames = [];
       
-      // Select random games
-      for (let i = 0; i < numberOfGames; i++) {
-        if (gamesCopy.length === 0) break;
-        
-        const randomIndex = seededRandom(0, gamesCopy.length - 1, `${dateString}-${i}`);
-        selectedGames.push(gamesCopy.splice(randomIndex, 1)[0]);
+      // Select random games using a consistent algorithm
+      for (let i = 0; i < numberOfGames && gamesCopy.length > 0; i++) {
+        const seed = `${dateString}-${i}`;
+        const random = seededRandom(seed);
+        const index = Math.floor(random * gamesCopy.length);
+        selectedGames.push(gamesCopy.splice(index, 1)[0]);
       }
       
       return selectedGames;
