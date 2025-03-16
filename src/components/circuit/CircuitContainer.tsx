@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AlertCircle, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -48,29 +47,24 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
         description: `Your time: ${formatTime(elapsed)}`,
       });
       
-      // Show results section
       setShowResults(true);
     }
   });
   
   const toggleTimer = () => {
     if (!timerRunning) {
-      // Check if popups are allowed
       if (!checkPopupBlocker()) {
         return;
       }
       
-      // Start the timer
       startTimer();
       openAllGamesInTabs(games);
     } else {
-      // Stop the timer
       stopTimer();
     }
   };
 
   const handleSubmitResults = () => {
-    // Use both the hook state and a direct check
     const canShowSummary = allResultsSelected || areAllResultsSelected();
     
     console.log("Submit results - allResultsSelected:", allResultsSelected);
@@ -152,7 +146,6 @@ const CircuitContainer: React.FC<CircuitContainerProps> = ({ games }) => {
         </div>
       </div>
       
-      {/* Popup Help Dialog */}
       <PopupBlockerDialog 
         open={popupDialogOpen} 
         onOpenChange={setPopupDialogOpen} 
