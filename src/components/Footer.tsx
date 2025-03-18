@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const Footer: React.FC = () => {
@@ -14,13 +13,6 @@ const Footer: React.FC = () => {
             </p>
           </div>
           <div className="flex space-x-6">
-            <a 
-              href="#" 
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="About"
-            >
-              About
-            </a>
             <a 
               href="#" 
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"

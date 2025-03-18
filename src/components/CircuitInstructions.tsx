@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Dialog,
@@ -42,7 +41,7 @@ const CircuitInstructions: React.FC<CircuitInstructionsProps> = ({
               <div>
                 <h3 className="font-medium text-base">Start the Timer</h3>
                 <p className="text-sm text-muted-foreground">
-                  Click the "Open All Games" button to start the timer. This will automatically open each game in a new tab.
+                  Click the "Start Timer" button to begin. This will automatically open each game in a new tab.
                 </p>
               </div>
             </div>

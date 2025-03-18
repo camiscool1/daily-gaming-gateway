@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Timer, TimerOff } from 'lucide-react';
@@ -42,7 +41,7 @@ const CircuitControls: React.FC<CircuitControlsProps> = ({
           ) : (
             <>
               <Timer className="w-5 h-5" />
-              Open All Games
+              Start Timer
             </>
           )}
         </Button>
